@@ -105,5 +105,22 @@ namespace Classlib.Entities
         }
 
         public virtual bool ChecaPossivelTransacao(decimal valor) => valor <= this.Saldo ? true : false;
+
+        public virtual void SimularRendimento(int meses, decimal rentabilidade) {
+            Console.WriteLine("Você não tem direito a esta opção");
+        }
+
+        public virtual Investimento Investimento(decimal valor, TipoInvestimentoEnum tipoInvestimento, int meses){
+
+            throw new Exception("Você não tem direito a esta opção");
+        }
+
+        public virtual decimal SimulacaoInvestimento(decimal valor, TipoInvestimentoEnum tipoInvestimento, int meses){
+            throw new Exception("Você não tem direito a esta opção");
+        }
+
+        protected virtual bool ChecaPossivelInvestimento(decimal valor, int meses, TipoInvestimentoEnum tipoInvestimento){
+            return false;
+        }
     }
 }

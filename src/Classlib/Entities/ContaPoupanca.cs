@@ -12,7 +12,7 @@ namespace Classlib.Entities
             this.TaxaRendimento = TaxaRendimento;
         }
 
-        public decimal SimulaRendimento(int meses, decimal rentabilidade)
+        public override void SimularRendimento(int meses, decimal rentabilidade)
         {
             decimal rendimento = this.Saldo;
 
@@ -21,7 +21,7 @@ namespace Classlib.Entities
                 rendimento += rendimento * rentabilidade;
             }
 
-            return rendimento;
+            Console.WriteLine($"Rendimento simulado para {meses} meses: {rendimento - this.Saldo}");
         }
     }
 }

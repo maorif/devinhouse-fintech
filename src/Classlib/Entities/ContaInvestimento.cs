@@ -9,24 +9,25 @@ namespace Classlib.Entities
 
         public ContaInvestimento(string Id, string Nome, string Cpf, object Endereco, decimal RendaMensal, int NumeroConta, AgenciaEnum Agencia) : base(Id, Nome, Cpf, Endereco, RendaMensal, NumeroConta, Agencia) { }
 
-        public Investimento Investimento(decimal valor, TipoInvestimentoEnum tipoInvestimento, int meses) {
+        public override Investimento Investimento(decimal valor, TipoInvestimentoEnum tipoInvestimento, int meses) {
 
-            var investimentoOk = ChecaPossivelInvestimento(meses, tipoInvestimento);
+            var investimentoOk = ChecaPossivelInvestimento(valor, meses, tipoInvestimento);
             if(!investimentoOk) {
                 throw new ArgumentException("Investimento não pode ser realizado.");
             }
             
+            this.Saldo -= valor;
             var investimento = new Investimento(new Guid().ToString(), $"Investimento {tipoInvestimento}", this.NumeroConta, valor, meses, DateOnly.FromDateTime(DateTime.Now), TipoTransacaoEnum.despesa, tipoInvestimento);
             this.Transacoes.Add(investimento);
             
             return investimento;
         }
 
-        public decimal SimulacaoInvestimento(decimal valor, TipoInvestimentoEnum tipoInvestimento, int meses) {
+        public override decimal SimulacaoInvestimento(decimal valor, TipoInvestimentoEnum tipoInvestimento, int meses) {
 
-            var investimentoOk = ChecaPossivelInvestimento(meses, tipoInvestimento);
+            var investimentoOk = ChecaPossivelInvestimento(valor, meses, tipoInvestimento);
             if(!investimentoOk) {
-                throw new ArgumentException("Investimento não pode ser realizado.");
+                throw new ArgumentException("Investimento não pode ser realizado. Saldo ou número de meses insuficiente.");
             }
 
             var rendimento = valor;
@@ -38,16 +39,19 @@ namespace Classlib.Entities
             return rendimento;
         }
 
-        private bool ChecaPossivelInvestimento(int meses, TipoInvestimentoEnum tipoInvestimento) {            
+        protected override bool ChecaPossivelInvestimento(decimal valor, int meses, TipoInvestimentoEnum tipoInvestimento) {            
+            if(valor > this.Saldo) {
+                return false;
+            }
             if(tipoInvestimento == TipoInvestimentoEnum.LCI && meses < 6) {
                 return false;
             }
 
-            if(tipoInvestimento == TipoInvestimentoEnum.LCA && meses < 12) {
+            else if(tipoInvestimento == TipoInvestimentoEnum.LCA && meses < 12) {
                 return false;
             }
 
-            if(tipoInvestimento == TipoInvestimentoEnum.CDB && meses < 24) {
+            else if(tipoInvestimento == TipoInvestimentoEnum.CDB && meses < 24) {
                 return false;
             }
 
